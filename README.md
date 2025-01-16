@@ -1,70 +1,79 @@
-# Getting Started with Create React App
+# Prueba Tenpo React
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Esta es una aplicación en React para visualizar transacciones. A continuación, se detallan los pasos para montar la aplicación tanto localmente como utilizando Docker.
 
-## Available Scripts
+## Requisitos
 
-In the project directory, you can run:
+- Node.js (versión 14 o superior)
+- npm (versión 6 o superior)
+- Docker (versión 20 o superior)
+- Docker Compose (versión 1.27 o superior)
 
-### `npm start`
+## Instalación y Ejecución Local
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+1. Clona el repositorio:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+    ```sh
+    git clone https://github.com/tu-usuario/prueba-tenpo-react.git
+    cd prueba-tenpo-react
+    ```
 
-### `npm test`
+2. Instala las dependencias:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+    ```sh
+    npm install
+    ```
 
-### `npm run build`
+3. Inicia la aplicación:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    ```sh
+    npm start
+    ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. Abre tu navegador y navega a `http://localhost:3000` para ver la aplicación en funcionamiento.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Orquestación con Docker
 
-### `npm run eject`
+1. Construye la imagen de Docker:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+    ```sh
+    docker build -t prueba-tenpo-react .
+    ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2. Inicia los servicios con Docker Compose:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    ```sh
+    docker-compose up
+    ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+3. Abre tu navegador y navega a `http://localhost:3000` para ver la aplicación en funcionamiento.
 
-## Learn More
+## Estructura del Proyecto
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- [public](http://_vscodecontentref_/1): Contiene los archivos estáticos y el archivo [index.html](http://_vscodecontentref_/2).
+- [src](http://_vscodecontentref_/3): Contiene los archivos fuente de la aplicación React.
+  - [App.js](http://_vscodecontentref_/4): Componente principal de la aplicación.
+  - [Transaction.js](http://_vscodecontentref_/5): Componente para visualizar y gestionar transacciones.
+  - [index.js](http://_vscodecontentref_/6): Punto de entrada de la aplicación.
+  - [reportWebVitals.js](http://_vscodecontentref_/7): Archivo para medir el rendimiento de la aplicación.
+  - [setupTests.js](http://_vscodecontentref_/8): Archivo de configuración para pruebas.
+- [Dockerfile](http://_vscodecontentref_/9): Archivo de configuración para construir la imagen de Docker.
+- [docker-compose.yml](http://_vscodecontentref_/10): Archivo de configuración para orquestar los servicios con Docker Compose.
+- [package.json](http://_vscodecontentref_/11): Archivo de configuración de npm que incluye las dependencias y scripts del proyecto.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Scripts Disponibles
 
-### Code Splitting
+En el directorio del proyecto, puedes ejecutar:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- `npm start`: Inicia la aplicación en modo de desarrollo.
+- `npm run build`: Construye la aplicación para producción en la carpeta `build`.
+- [npm test](http://_vscodecontentref_/12): Ejecuta las pruebas.
+- `npm run eject`: Si necesitas configurar el proyecto manualmente, puedes ejecutar este comando. **Nota: Este comando es irreversible.**
 
-### Analyzing the Bundle Size
+## Notas
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- Asegúrate de que el backend de la API de transacciones esté corriendo en `http://localhost:8080` para que la aplicación funcione correctamente.
+- Si necesitas cambiar la URL del backend, puedes modificar el proxy en el archivo [package.json](http://_vscodecontentref_/13).
 
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```json
+"proxy": "http://localhost:8080"
