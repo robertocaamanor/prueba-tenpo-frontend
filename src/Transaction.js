@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, Form, Pagination, Alert } from 'react-bootstrap';
 import axios from 'axios';
+import './styles.css';
 
 const Transaction = () => {
   const [transactions, setTransactions] = useState([]);
@@ -130,10 +131,6 @@ const Transaction = () => {
       });
   };
 
-  if (transactions.length === 0) {
-    return <div>Cargando...</div>;
-  }
-
   // Obtener las transacciones actuales
   const indexOfLastTransaction = currentPage * transactionsPerPage;
   const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
@@ -144,44 +141,57 @@ const Transaction = () => {
 
   return (
     <div className="container mt-5">
-      <h2>Detalles de las Transacciones</h2>
-      <Button variant="primary" onClick={handleShow}>
-        Agregar Transacción
-      </Button>
-      <table className="table table-striped mt-3">
-        <thead>
-          <tr>
-            <th scope="col">ID de Transacción</th>
-            <th scope="col">Monto</th>
-            <th scope="col">Giro del Comercio</th>
-            <th scope="col">Nombre del Cliente</th>
-            <th scope="col">Fecha de Transacción</th>
-            <th scope="col">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentTransactions.map(transaction => (
-            <tr key={transaction.idTransaccion}>
-              <td>{transaction.idTransaccion}</td>
-              <td>${transaction.montoTransaccion}</td>
-              <td>{transaction.giroComercio}</td>
-              <td>{transaction.nombreTenpista}</td>
-              <td>{new Date(transaction.fechaTransaccion).toLocaleString()}</td>
-              <td>
-                <Button variant="warning" onClick={() => handleEdit(transaction.idTransaccion)} className="mr-2">Editar</Button>
-                <Button variant="danger" onClick={() => handleDelete(transaction.idTransaccion)}>Eliminar</Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <Pagination>
-        {Array.from({ length: Math.ceil(transactions.length / transactionsPerPage) }, (_, index) => (
-          <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => paginate(index + 1)}>
-            {index + 1}
-          </Pagination.Item>
-        ))}
-      </Pagination>
+      <div className="d-flex flex-column align-items-start">
+        <h2 className="mb-3">Detalles de las Transacciones</h2>
+        <hr className="w-100" />
+        <Button variant="primary" onClick={handleShow} className="mb-3">
+          Agregar Transacción
+        </Button>
+      </div>
+      {transactions.length === 0 ? (
+        <div>No se ha encontrado ningún dato, agrega uno...</div>
+      ) : (
+        <>
+          <table className="table table-striped mt-3">
+            <thead>
+              <tr>
+                <th scope="col">ID de Transacción</th>
+                <th scope="col">Monto</th>
+                <th scope="col">Giro del Comercio</th>
+                <th scope="col">Nombre del Cliente</th>
+                <th scope="col">Fecha de Transacción</th>
+                <th scope="col">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentTransactions.map(transaction => (
+                <tr key={transaction.idTransaccion}>
+                  <td>{transaction.idTransaccion}</td>
+                  <td>${transaction.montoTransaccion}</td>
+                  <td>{transaction.giroComercio}</td>
+                  <td>{transaction.nombreTenpista}</td>
+                  <td>{new Date(transaction.fechaTransaccion).toLocaleString()}</td>
+                  <td>
+                  <Button variant="warning" onClick={() => handleEdit(transaction.idTransaccion)} className="btn-spacing">
+                    Editar
+                  </Button>
+                  <Button variant="danger" onClick={() => handleDelete(transaction.idTransaccion)}>
+                    Eliminar
+                  </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Pagination>
+            {Array.from({ length: Math.ceil(transactions.length / transactionsPerPage) }, (_, index) => (
+              <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => paginate(index + 1)}>
+                {index + 1}
+              </Pagination.Item>
+            ))}
+          </Pagination>
+        </>
+      )}
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
