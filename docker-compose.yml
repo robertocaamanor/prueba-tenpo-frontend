@@ -1,0 +1,7 @@
+# filepath: /c:/Users/Roberto Caamaño/Documents/prueba-tenpo-react/docker-compose.yml
+version: '3'
+services:
+  react-app:
+    build: .
+    ports:
+      - "3000:3000"
