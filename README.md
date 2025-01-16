@@ -14,7 +14,7 @@ Esta es una aplicación en React para visualizar transacciones. A continuación,
 1. Clona el repositorio:
 
     ```sh
-    git clone https://github.com/tu-usuario/prueba-tenpo-react.git
+    git clone https://github.com/robertocaamanor/prueba-tenpo-frontend
     cd prueba-tenpo-react
     ```
 
