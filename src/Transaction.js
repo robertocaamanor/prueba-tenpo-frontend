@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, Form, Pagination, Alert } from 'react-bootstrap';
+import axios from 'axios';
 
 const Transaction = () => {
   const [transactions, setTransactions] = useState([]);
@@ -18,10 +19,13 @@ const Transaction = () => {
   const [transactionToDelete, setTransactionToDelete] = useState(null);
 
   useEffect(() => {
-    fetch('/transaction')
-      .then(response => response.json())
-      .then(data => {
-        const sortedTransactions = data.sort((a, b) => new Date(b.fechaTransaccion) - new Date(a.fechaTransaccion));
+    axios.get('http://localhost:8080/transaction', {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        const sortedTransactions = response.data.sort((a, b) => new Date(b.fechaTransaccion) - new Date(a.fechaTransaccion));
         setTransactions(sortedTransactions);
       })
       .catch(error => {
@@ -52,17 +56,14 @@ const Transaction = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isEditing) {
-      fetch(`http://spring-app:8080/transaction/${currentTransactionId}`, {
-        method: 'PUT',
+      axios.put(`http://localhost:8080/transaction/${currentTransactionId}`, newTransaction, {
         headers: {
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newTransaction)
+        }
       })
-        .then(response => response.json())
-        .then(data => {
+        .then(response => {
           const updatedTransactions = transactions.map(transaction =>
-            transaction.idTransaccion === currentTransactionId ? data : transaction
+            transaction.idTransaccion === currentTransactionId ? response.data : transaction
           );
           setTransactions(updatedTransactions);
           handleClose();
@@ -75,29 +76,25 @@ const Transaction = () => {
           }
         });
     } else {
-      fetch('http://spring-app:8080/transaction', {
-        method: 'POST',
+      axios.post('http://localhost:8080/transaction', newTransaction, {
         headers: {
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newTransaction)
+        }
       })
-        .then(response => response.json())
-        .then(data => {
-          const sortedTransactions = [...transactions, data].sort((a, b) => new Date(b.fechaTransaccion) - new Date(a.fechaTransaccion));
-          setTransactions(sortedTransactions);
+        .then(response => {
+          setTransactions([...transactions, response.data]);
           handleClose();
         })
         .catch(error => {
-          console.error('Hubo un error al agregar la transacción!', error);
+          console.error('Hubo un error al crear la transacción!', error);
         });
     }
   };
 
   const handleEdit = (id) => {
-    fetch(`http://spring-app:8080/transaction/${id}`)
-      .then(response => response.json())
-      .then(data => {
+    axios.get(`http://localhost:8080/transaction/${id}`)
+      .then(response => {
+        const data = response.data;
         setNewTransaction({
           montoTransaccion: data.montoTransaccion,
           giroComercio: data.giroComercio,
@@ -118,8 +115,10 @@ const Transaction = () => {
   };
 
   const confirmDelete = () => {
-    fetch(`http://spring-app:8080/transaction/${transactionToDelete}`, {
-      method: 'DELETE'
+    axios.delete(`http://localhost:8080/transaction/${transactionToDelete}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
     })
       .then(() => {
         const updatedTransactions = transactions.filter(transaction => transaction.idTransaccion !== transactionToDelete);
