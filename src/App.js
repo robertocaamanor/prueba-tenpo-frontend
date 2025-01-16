@@ -1,15 +1,14 @@
 import React from 'react';
-import './App.css';
-import Transaction from './Transaction';
-import Navbar from './bootstrap/Navbar'; // Importa el componente Navbar desde la carpeta /bootstrap
+import Transaction from './components/Transaction';
+import Navbar from './bootstrap/Navbar';
 
-function App() {
+const App = () => {
   return (
     <div className="App">
-      <Navbar title="Tenpo Transacciones" /> {/* Pasa el título como prop */}
+      <Navbar title="Tenpo Transacciones" />
       <Transaction />
     </div>
   );
-}
+};
 
 export default App;
