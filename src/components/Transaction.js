@@ -11,6 +11,7 @@ const Transaction = () => {
   const [transactionsPerPage] = useState(10);
   const [showAddEditModal, setShowAddEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [transactionToEdit, setTransactionToEdit] = useState(null);
   const [transactionToDelete, setTransactionToDelete] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -48,6 +49,23 @@ const Transaction = () => {
       .catch(error => {
         console.error('Hubo un error al eliminar la transacción!', error);
       });
+  };
+
+  const handleEdit = (transaction) => {
+    setTransactionToEdit(transaction);
+    setShowAddEditModal(true);
+  };
+
+  const handleAddEditSubmit = (updatedTransaction) => {
+    if (transactionToEdit) {
+      setTransactions(transactions.map(transaction => 
+        transaction.idTransaccion === updatedTransaction.idTransaccion ? updatedTransaction : transaction
+      ));
+    } else {
+      setTransactions([...transactions, updatedTransaction]);
+    }
+    setShowAddEditModal(false);
+    setTransactionToEdit(null);
   };
 
   const indexOfLastTransaction = currentPage * transactionsPerPage;
@@ -89,7 +107,7 @@ const Transaction = () => {
                   <td>{transaction.nombreTenpista}</td>
                   <td>{new Date(transaction.fechaTransaccion).toLocaleString()}</td>
                   <td>
-                    <Button variant="warning" onClick={() => setShowAddEditModal(true)} className="btn-spacing">
+                    <Button variant="warning" onClick={() => handleEdit(transaction)} className="btn-spacing">
                       Editar
                     </Button>
                     <Button variant="danger" onClick={() => handleDelete(transaction.idTransaccion)}>
@@ -110,8 +128,18 @@ const Transaction = () => {
         </>
       )}
 
-      <AddEditTransactionModal show={showAddEditModal} onHide={() => setShowAddEditModal(false)} setTransactions={setTransactions} setErrorMessage={setErrorMessage} />
-      <DeleteTransactionModal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} confirmDelete={confirmDelete} />
+      <AddEditTransactionModal 
+        show={showAddEditModal} 
+        handleClose={() => setShowAddEditModal(false)} 
+        onSubmit={handleAddEditSubmit} 
+        isEditing={!!transactionToEdit} 
+        transactionId={transactionToEdit?.idTransaccion} 
+      />
+      <DeleteTransactionModal 
+        show={showDeleteModal} 
+        handleClose={() => setShowDeleteModal(false)} 
+        confirmDelete={confirmDelete} 
+      />
     </div>
   );
 };

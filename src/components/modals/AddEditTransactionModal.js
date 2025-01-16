@@ -1,42 +1,106 @@
 import React from 'react';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import axios from 'axios';
 
 class AddEditTransactionModal extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      montoTransaccion: props.transaction ? props.transaction.montoTransaccion : '',
-      giroComercio: props.transaction ? props.transaction.giroComercio : '',
-      nombreTenpista: props.transaction ? props.transaction.nombreTenpista : '',
+      montoTransaccion: '',
+      giroComercio: '',
+      nombreTenpista: '',
       errorMessage: ''
     };
   }
+
+  componentDidMount() {
+    const { isEditing, transactionId } = this.props;
+    if (isEditing && transactionId) {
+      this.fetchTransactionData(transactionId);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.transactionId !== prevProps.transactionId && this.props.isEditing) {
+      this.fetchTransactionData(this.props.transactionId);
+    }
+  }
+
+  fetchTransactionData = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/transaction/${id}`);
+      const transaction = response.data;
+      this.setState({
+        montoTransaccion: transaction.montoTransaccion,
+        giroComercio: transaction.giroComercio,
+        nombreTenpista: transaction.nombreTenpista
+      });
+    } catch (error) {
+      this.setState({ errorMessage: error.message });
+    }
+  };
 
   handleChange = (e) => {
     const { name, value } = e.target;
     this.setState({ [name]: value });
   };
 
-  handleSubmit = (e) => {
+  handleSubmit = async (e) => {
     e.preventDefault();
-    const { isEditing, onSubmit } = this.props;
+    const { isEditing, onSubmit, transactionId } = this.props;
     const { montoTransaccion, giroComercio, nombreTenpista } = this.state;
-
-    if (isEditing) {
-      onSubmit({ montoTransaccion, giroComercio, nombreTenpista });
-    } else {
-      onSubmit({ montoTransaccion, giroComercio, nombreTenpista });
+  
+    const transactionData = { montoTransaccion, giroComercio, nombreTenpista };
+  
+    try {
+      const response = await axios({
+        method: isEditing ? 'PUT' : 'POST',
+        url: `http://localhost:8080/transaction${isEditing ? `/${transactionId}` : ''}`,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: transactionData
+      });
+  
+      const result = response.data;
+      onSubmit(result);
+    } catch (error) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        if (error.response.status === 429) {
+          this.setState({ errorMessage: error.response.data.message });
+        } else {
+          this.setState({ errorMessage: error.response.data.message || error.message });
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        this.setState({ errorMessage: 'Has superado el número de transacciones permitidas en esta aplicación, inténtalo de nuevo dentro de 60 segundos' });
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        this.setState({ errorMessage: error.message });
+      }
     }
   };
 
+  handleClose = () => {
+    this.setState({
+      montoTransaccion: '',
+      giroComercio: '',
+      nombreTenpista: '',
+      errorMessage: ''
+    });
+    this.props.handleClose();
+  };
+
   render() {
-    const { show, handleClose, isEditing } = this.props;
+    const { show, isEditing } = this.props;
     const { montoTransaccion, giroComercio, nombreTenpista, errorMessage } = this.state;
 
     return (
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
+      <Modal show={show} onHide={this.handleClose}>
+        <Modal.Header closeButton onHide={this.handleClose}>
           <Modal.Title>{isEditing ? 'Editar Transacción' : 'Agregar Nueva Transacción'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -87,6 +151,7 @@ AddEditTransactionModal.propTypes = {
   handleClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
   isEditing: PropTypes.bool,
+  transactionId: PropTypes.string,
   transaction: PropTypes.object
 };
 
